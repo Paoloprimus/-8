@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import BigButton from "@/components/BigButton";
-import MinimalHUD from "@/components/MinimalHUD";
-import { saveNewRunAsBaseline, startPlanWizardIfNeeded } from "@/lib/storage";
-import { haversineMeters } from "@/lib/haversine";
-import { speak } from "@/lib/tts";
+import BigButton from "../../components/BigButton";
+import MinimalHUD from "../../components/MinimalHUD";
+import { saveNewRunAsBaseline, startPlanWizardIfNeeded } from "../../lib/storage";
+import { haversineMeters } from "../../lib/haversine";
+import { speak } from "../../lib/tts";
 
 /**
  * Registra la PRIMA corsa su nuovo percorso.
@@ -35,7 +35,6 @@ export default function NewRoutePage() {
     setPhase("tracking");
     setStartTs(Date.now());
     speak("Tracciamento avviato.");
-    // richiesta permesso
     if (!navigator.geolocation) { alert("Geolocalizzazione non supportata."); return; }
 
     navigator.geolocation.watchPosition(
@@ -44,16 +43,14 @@ export default function NewRoutePage() {
         lastPoint.current = pos;
         if (!prev) return;
 
-        // distanza incrementale filtrando piccoli jitter
         const d = haversineMeters(
           { lat: prev.coords.latitude, lon: prev.coords.longitude },
           { lat: pos.coords.latitude,  lon: pos.coords.longitude }
         );
-        if (d < 3) return; // filtro rumore <3m
+        if (d < 3) return;
 
         setDistanceM((curr) => {
           const next = curr + d;
-          // ogni 200m registriamo split cumulato (secondi)
           const idx = Math.floor(next / 200);
           if (idx > nextSplitIdx.current) {
             nextSplitIdx.current = idx;
@@ -80,7 +77,7 @@ export default function NewRoutePage() {
     };
     await saveNewRunAsBaseline(result);
     speak("Corsa salvata come riferimento. Imposta il tuo obiettivo.");
-    await startPlanWizardIfNeeded(); // apre un semplice prompt sul target
+    await startPlanWizardIfNeeded();
     window.location.href = "/route";
   }
 
