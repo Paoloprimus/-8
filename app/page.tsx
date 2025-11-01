@@ -6,7 +6,7 @@ import BigButton from "../components/BigButton";
 export default function Home() {
   return (
     <main>
-      <h1 className="huge">Runner</h1>
+      <h1 className="huge">-8</h1>
       <p className="center gray mt">UI ultra-minimale. GPS in primo piano. Salvataggi locali.</p>
 
       <div className="row mt2" style={{ flexDirection: "column", gap: 16 }}>
