@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import BigButton from "@/components/BigButton";
-import MinimalHUD from "@/components/MinimalHUD";
-import { loadBaseline, loadPlan, loadLastRunCache, saveCompletedRun, bumpPlanAfterRun } from "@/lib/storage";
-import { haversineMeters } from "@/lib/haversine";
-import { speak } from "@/lib/tts";
-import { Plan } from "@/lib/types";
+import BigButton from "../../components/BigButton";
+import MinimalHUD from "../../components/MinimalHUD";
+import { loadBaseline, loadPlan, loadLastRunCache, saveCompletedRun, bumpPlanAfterRun } from "../../lib/storage";
+import { haversineMeters } from "../../lib/haversine";
+import { speak } from "../../lib/tts";
+import { Plan } from "../../lib/types";
 
 /**
  * Confronta contro: ultima corsa e piano globale.
@@ -18,7 +18,6 @@ export default function RoutePage() {
   const [baselineS, setBaselineS] = useState<number | null>(null);
   const [lastSplits, setLastSplits] = useState<number[] | undefined>(undefined);
 
-  // stato corsa
   const [phase, setPhase] = useState<"idle"|"tracking">("idle");
   const [startTs, setStartTs] = useState<number | null>(null);
   const [elapsedS, setElapsedS] = useState(0);
@@ -43,13 +42,11 @@ export default function RoutePage() {
     })();
   }, []);
 
-  // timer tempo
   useEffect(() => {
     if (phase === "tracking" && startTs && tick.current === null) {
       tick.current = window.setInterval(() => {
         const nowS = Math.round((Date.now() - startTs) / 1000);
         setElapsedS(nowS);
-        // aggiorna ΔPiano in tempo reale (stima sul tempo totale corrente)
         if (plan && baselineS != null) {
           const expectedGain = plan.perSessionDeltaS * (plan.currentSession - 1);
           const overBaseline = nowS - baselineS;
@@ -91,7 +88,6 @@ export default function RoutePage() {
               return ns;
             });
 
-            // ΔUltimo su split corrente
             if (lastSplits && lastSplits[idx - 1] != null) {
               const dLast = splitT - lastSplits[idx - 1];
               setDeltaLast(Math.round(dLast));
